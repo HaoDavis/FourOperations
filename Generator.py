@@ -32,10 +32,12 @@ class Generator:
         expressionList = []
         i = 0
         while i < expNum:
-            random_num_operation = random.randint(1, self.operCount)  # 运算符的数目
-            is_need_parenteses = random.randint(0, 1)  # 是否需要加括号
-            number_of_oprand = random_num_operation + 1  # 操作数比操作符的数目多1
             exp = []
+            #分j是奇数偶数的情况来填充运算符或操作数 从而填充完整写成表达式
+            random_num_operation = random.randint(1, self.operCount)  # 运算符的数目
+            number_of_oprand = random_num_operation + 1  # 操作数比操作符的数目多1
+            is_need_parenteses = random.randint(0, 1)  # 是否需要加括号
+
             for j in range(random_num_operation + number_of_oprand):
                 if j % 2 == 0:
                     exp.append(self.generate_operand()['operStr'])
