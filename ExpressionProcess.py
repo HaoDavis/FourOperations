@@ -19,7 +19,7 @@ class ExpressionProcess:
         self.re = self.mid2suffix()
         self.value = self.calculate_suffix()
 
-    def mid2suffix(self):  # 输入是这个类的.exp属性 输出是suffix_stack栈中的内容 同时将输出放到了类的.value属性中
+    def mid2suffix(self):
         """
         中缀表达式转为后缀表达式
         :param: exp: 表达式字符串
@@ -70,8 +70,6 @@ class ExpressionProcess:
                 n2 = stack_value.pop()
                 n1 = stack_value.pop()
                 result = self.rule(n1, n2, item)
-                # print("resule:{}".format(result))
-                # 求值过程中出现负数和n/0这个情况去除
                 if result < 0 or result == False:
                     return False
                 stack_value.append(result)

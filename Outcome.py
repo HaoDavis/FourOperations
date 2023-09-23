@@ -15,11 +15,6 @@ class Outcome:
         print("创建Answer类")
 
     def expression_result(self, expressions):
-        """
-        计算表达式列表的结果并将其存储到文件中。
-        :param expressions: 要评估的表达式列表。
-        :return: 无
-        """
         with open('Answer.txt', 'w', encoding='utf-8') as file:
             for i, exp in enumerate(expressions):
                 suffix_expression = ExpressionProcess(exp)
