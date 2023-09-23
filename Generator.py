@@ -12,14 +12,13 @@ class Generator:
     answerStr = ''  # 答案字符串
     operRange = 10  # 操作数范围
     operCount = 3  # 操作符个数
-    decChance = 0  # 出现分数的概率
+    decChance = 0.3  # 出现分数的概率
     expressionNum = 100  # 生成表达式的数目
 
     def __init__(self, operRange, expressionNum):  # 类的构造函数
         self.operRange = operRange
         self.operCount = 3
-        decChance = random.randint(1, 10) / 100  # "/100"是不想生成分数题目太多
-        print("出现分数的随机概率:{}".format(decChance))
+        decChance = random.randint(1, 30) / 100
         self.decChance = decChance
         self.expressionNum = expressionNum
         self.problemArray = self.generate_question()
@@ -27,52 +26,70 @@ class Generator:
         # print(self.problemArray)
         self.generated_expressions = set()  # 用于存储已生成的表达式
 
+
     def generate_question(self):
+        expNum = self.expressionNum
         expressionList = []
         i = 0
+        while i < expNum:
+            random_num_operation = random.randint(1, self.operCount)  # 运算符的数目
+            is_need_parenteses = random.randint(0, 1)  # 是否需要加括号
+            number_of_oprand = random_num_operation + 1  # 操作数比操作符的数目多1
+            exp = []
+            for j in range(random_num_operation + number_of_oprand):
+                if j % 2 == 0:
+                    exp.append(self.generate_operand()['operStr'])
+                    if j > 1 and exp[j - 1] == '÷' and exp[j] == '0':
+                        while True:
+                            exp[j - 1] = self.generate_operation()
+                            if exp[j - 1] != '÷':
+                                continue
+                            else:
+                                break
+                else:
+                    exp.append(self.generate_operation())
 
-        while i < self.expressionNum:
-            expression = self.generate_expression()
+                if j > 3:
+                    if exp[j - 2] == '÷':
+                        if exp[j - 1] > exp[j - 3]:
+                            t = exp[j - 1]
+                            exp[j - 1] = exp[j - 3]
+                            exp[j - 3]=t
+                    elif exp[j - 2] == '-':
+                        if exp[j - 1] < exp[j - 3]:
+                            t = exp[j - 1]
+                            exp[j - 1] = exp[j - 3]
+                            exp[j - 3] = t
 
-            if self.expressionNum <= 500 or not self.is_same(expressionList, expression):
+            if is_need_parenteses and number_of_oprand != 2:
+                expression = " ".join(self.generate_parentheses(exp, number_of_oprand))
+            else:
+                expression = " ".join(exp)
+            if self.expressionNum <= 500:
+                if self.is_same(expressionList, expression):
+                    continue
+                else:
+                    result = self.calculate(expression)
+                    if result == "False":
+                        pass
+                    else:
+
+                        expressionList.append(expression)
+                        # ('第 %d 道题' % int(i + 1))
+                        # print(expression)
+                        i = i + 1
+            else:
                 result = self.calculate(expression)
-                if result != "False":
+                if result == "False":
+                    pass
+                else:
+
                     expressionList.append(expression)
-                    i += 1
+                    # ('第 %d 道题' % int(i + 1))
+                    # print(expression)
+                    i = i + 1
 
         return expressionList
-
-    def generate_expression(self):
-        random_num_operation = random.randint(1, self.operCount)
-        is_need_parenteses = random.randint(0, 1)
-        number_of_oprand = random_num_operation + 1
-        exp = []
-
-        for j in range(random_num_operation + number_of_oprand):
-            if j % 2 == 0:
-                exp.append(self.generate_operand()['operStr'])
-                if j > 1 and exp[j - 1] == '÷' and exp[j] == '0':
-                    while True:
-                        exp[j - 1] = self.generate_operation()
-                        if exp[j - 1] != '÷':
-                            break
-            else:
-                exp.append(self.generate_operation())
-
-            if j > 3:
-                if exp[j - 2] == '÷' and exp[j - 1] > exp[j - 3]:
-                    exp[j - 1], exp[j - 3] = exp[j - 3], exp[j - 1]
-                elif exp[j - 2] == '-':
-                    if exp[j - 1] < exp[j - 3]:
-                        exp[j - 1], exp[j - 3] = exp[j - 3], exp[j - 1]
-
-        if is_need_parenteses and number_of_oprand != 2:
-            expression = " ".join(self.generate_parentheses(exp, number_of_oprand))
-        else:
-            expression = " ".join(exp)
-
-        return expression
-
     def generate_operation(self):  # 随机生成操作符
         operators = ['+', '-', '×', '÷']
         return operators[random.randint(0, len(operators) - 1)]
