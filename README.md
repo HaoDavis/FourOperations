@@ -7,22 +7,16 @@
 
 GitHub项目地址🔗：https://github.com/HaoDavis/FourOperations
 # 效能分析
-改进：
-1.is_same改用hash对照的方法，不需要遍历表达式列表，而是将表达式列表里的每一个表达式
-都转换成hash值，再用新的表达式与之对比，这样不需要重复遍历表达式列表，也不用重复计算某条表达式的hash，
-效率大幅提高。
-2.在check_result函数中，用zip函数将表达式列表和答案列表打包成一个元组，
-再用map函数对每一个元组进行判断，提高了效率。
-
+## 改进思路
+1. is_same 改用 hash 对照的方法，不需要遍历表达式列表，而是将表达式列表里的每一个表达式都转换成 hash 值，再用新的表达式与之对比，这样不需要重复遍历表达式列表，也不用重复计算某条表达式的 hash ，效率大幅提高。
+2. 在 check_result 函数中，用 zip 函数将表达式列表和答案列表打包成一个元组， 再用 map 函数对每一个元组进行判断，提高了效率。
+## 性能分析图
+![img.png](img.png)
+![img_1.png](img_1.png)
 # 设计实现过程
-1.Tree类：由于要判断两个等式本质上是否是一样的，要先将中缀表达式转换为二叉树，
-用的是gnerate_tree函数，然后判断两棵树本质上是否相同，用的是is_same_tree函数。
-2.ExpressionProcess类：用于处理表达式，包括将中缀表达式转换为后缀表达式，
-用的是mid2suffix函数。以及计算后缀表达式，用的是calculate_suffix函数。
-3.Generate类：就像类名一样，这个类里包含很多生成所需内容的函数，包括生成运算符、
-生成运算数generate_operand、生成并插入括号generate_parentheses以及处理分数的格式等。
-还有generate_question函数它通过调用其他函数，生成题目和答案。
-最重要的是is_same函数，它用hash来判断新生成的表达式是否与之前的表达式相同。
+1. Tree 类：由于要判断两个等式本质上是否是一样的，要先将中缀表达式转换为二叉树，用的是 gnerate_tree 函数，然后判断两棵树本质上是否相同，用的是 is_same_tree 函数。
+2. ExpressionProcess 类：用于处理表达式，包括将中缀表达式转换为后缀表达式，用的是 mid2suffix 函数。以及计算后缀表达式，用的是 calculate_suffix 函数。
+3. Generate 类：就像类名一样，这个类里包含很多生成所需内容的函数，包括生成运算符、生成运算数 generate_operand 、生成并插入括号 generate_parentheses 以及处理分数的格式等。还有 generate_question 函数它通过调用其他函数，生成题目和答案。 最重要的是 is_same 函数，它用 hash 来判断新生成的表达式是否与之前的表达式相同。
 具体实现如下：
 ```python
     def is_same(self, express_set, expression):
@@ -51,9 +45,7 @@ GitHub项目地址🔗：https://github.com/HaoDavis/FourOperations
 
         return False
 ```
-4.Outcome类：用写入答案以及实现答案检查。
-expression_result将获取到的答案写入Answers.txt文件中，
-做了改进保证写入的答案是带分数也不是真分数。细节如下：
+4. Outcome 类：用写入答案以及实现答案检查。 expression_result 将获取到的答案写入 Answers.txt 文件中，做了改进保证写入的答案是带分数也不是真分数。细节如下：
 ```python
     def expression_result(self, expressions):
         with open('Answer.txt', 'w', encoding='utf-8') as file:
@@ -74,9 +66,7 @@ expression_result将获取到的答案写入Answers.txt文件中，
                 result = f"Answer{i + 1}: {exp_value}\n"
                 file.write(result)
 ```
-使用上下文管理器。这确保了文件在不再需要时会被正确关闭。这有助于避免资源泄漏和文件锁定问题。
-另外，在check_result方法检查答案时，用zip函数将表达式列表和答案列表打包成一个元组，
-并行迭代对比给定的文本答案与正确答案，简化代码并提高可读性。静态方法可以提高代码的可维护性和可重用性，
+使用上下文管理器。这确保了文件在不再需要时会被正确关闭。这有助于避免资源泄漏和文件锁定问题。另外，在 check_result 方法检查答案时，用zip函数将表达式列表和答案列表打包成一个元组，并行迭代对比给定的文本答案与正确答案，简化代码并提高可读性。静态方法可以提高代码的可维护性和可重用性，
 ```python
    @staticmethod
     def check_result(exercisefile, answerfile):
@@ -123,7 +113,7 @@ expression_result将获取到的答案写入Answers.txt文件中，
             print('请检查文件路径是否正确')
 ```
 # 代码说明
-1.Gnerator类中的fraction_to_str函数，用于将分数转换为字符串，方便写入文件。
+1. Gnerator 类中的 fraction_to_str 函数，用于将分数转换为字符串，方便写入文件。
 ```python
     def fraction_to_str(self, operArray):
         operNum1, operNum2 = operArray
@@ -138,16 +128,11 @@ expression_result将获取到的答案写入Answers.txt文件中，
 
         return f"{operNum1}/{operNum2}"
 ```
-2.ExpressionProcess类中的mid2suffix函数，用于将中缀表达式转换为后缀表达式。
-算法如下：
-（1）遇到操作数时直接加入集合
-（2）遇到操作符，与栈顶操作符比较优先级
-    如果栈为空，或者栈顶元素为(，直接加入栈。
-    如果优先级比栈顶操作数高，直接加入栈。
-    如果优先级比栈顶操作符低或者相等，则弹出栈顶元素入集合，再次进行对比
-（3）遇到括号时:
-    如果为左括号，直接加入栈
-    如果为右括号，依次弹出栈顶元素入集合，并且再次对比，直到遇到左括号，弹出栈顶元素不入集合。4 最后将栈顶元素依次弹出入集合。
+2. ExpressionProcess 类中的 mid2suffix 函数，用于将中缀表达式转换为后缀表达式。算法如下：
+    1. 遇到操作数时直接加入集合
+    2. 遇到操作符，与栈顶操作符比较优先级如果栈为空，或者栈顶元素为(，直接加入栈。如果优先级比栈顶操作数高，直接加入栈。如果优先级比栈顶操作符低或者相等，则弹出栈顶元素入集合，再次进行对比
+    3. 遇到括号时:如果为左括号，直接加入栈。如果为右括号，依次弹出栈顶元素入集合，并且再次对比，直到遇到左括号，弹出栈顶元素不入集合。
+    4. 最后将栈顶元素依次弹出入集合。
 ```python
     def mid2suffix(self):
         """
@@ -187,14 +172,10 @@ expression_result将获取到的答案写入Answers.txt文件中，
         self.re = suffix_stack
         return suffix_stack
 ```
-3.ExpressionProcess类中的calculate_suffix函数，用于计算后缀表达式的值。
-算法如下：
-(1)字符为运算数:
-直接入栈(先分析出完整的运算数并将其转换为对应的数据类型)
-(2)字符为操作符:
-连续出栈两次，使用出栈的两个数据进行相应计算，并将计算结果入栈
-e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时的操作符为-，则计算 b-a(a和b顺序不能反)，并将结果入栈。
-3、重复以上步骤直至遍历完成后缀表达式，最后栈中的数据就是中缀表达式的计算结果。
+3. ExpressionProcess 类中的 calculate_suffix 函数，用于计算后缀表达式的值。算法如下：
+    1. 字符为运算数: 直接入栈(先分析出完整的运算数并将其转换为对应的数据类型)
+    2. 字符为操作符: 连续出栈两次，使用出栈的两个数据进行相应计算，并将计算结果入栈 e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时的操作符为-，则计算 b-a(a和b顺序不能反)，并将结果入栈。
+    3. 重复以上步骤直至遍历完成后缀表达式，最后栈中的数据就是中缀表达式的计算结果。
 ```python
     def calculate_suffix(self):
         """
@@ -232,6 +213,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
 ```
 # 测试运行
 利用unittest单元测试框架,实现单元测试自动化，以下仅列举部分用例。
+1. 正确情况下的中缀表达式转后缀表达式：
 ```python
     def test_mid2suffix(self):
         # 测试中缀表达式转后缀表达式
@@ -239,7 +221,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         exp_process = ExpressionProcess(exp)
         self.assertEqual(exp_process.re, ['1', '2', '+', '3', '+'])
 ```
-2. 
+2. 缺少操作数的中缀表达式转后缀表达式：
 ```python
     def test_mid2suffix2(self):
         # 测试中缀表达式转后缀表达式
@@ -247,7 +229,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         with self.assertRaises(IndexError):
             exp_process = ExpressionProcess(exp)
 ```
-3.
+3. 正确情况下的后缀表达式求值：
 ```python
     def test_calculate_suffix(self):
         # 测试后缀表达式求值
@@ -255,7 +237,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         exp_process = ExpressionProcess(exp)
         self.assertEqual(exp_process.value, 6)
 ```
-4.
+4. 缺少操作数的后缀表达式求值：
 ```python
     def test_calculate_suffix2(self):
         # 测试后缀表达式求值
@@ -263,7 +245,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         with self.assertRaises(ValueError):
             exp_process = ExpressionProcess(exp)
 ```
-5. 
+5.  测试生成题目：
 ```python
     def test_generate_question(self):
         # 测试生成题目
@@ -271,7 +253,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         question = gen.generate_question()
         self.assertEqual(len(question), 10)
 ```
-6.
+6. 测试生成括号：
 ```python
     def test_generate_parentheses(self):
         # 测试生成括号
@@ -279,7 +261,7 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         question = gen.generate_parentheses("1 + 2 + 3", 2)
         self.assertEqual("(" in question, True)
 ```
-7.
+7. 测试中缀表达式转后缀表达式：
 ```python
     def test_mid2suffix3(self):
         # 测试中缀表达式转后缀表达式
@@ -287,26 +269,26 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         exp_process = ExpressionProcess(exp)
         self.assertEqual(exp_process.re, ['1', '5', '3', '2', '+', '×', '+', '4', '5', '×', '-'])
 ```
-8.
+8. 测试小数转分数：
 ```python
     def test_to_fraction(self):
         # 测试小数转分数
         self.assertEqual(Generator.to_fraction(self, 1, 2), [1, 2])
 ```
-9.
+9. 测试获取公因子：
 ```python
     def test_get_common_factors(self):
         # 测试获取公因子
         self.assertEqual(Generator.get_common_factors(self, 6), [2, 3, 6])
 ```
-10.
+10. 测试数字转符号：
 ```python
     def test_num2symbol(self):
         # 测试数字转符号
         self.assertEqual(Generator.num2symbol(self, 1), "+")
 
 ```
-11.
+11. 测试判断重复：
 ```python
     def test_is_same(self):
         # 测试判断重复
@@ -317,27 +299,25 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
 - **戴子豪**：结对项目和个人项目很不一样，与人合作增加了不少的沟通协调成本，前期沟通、项目的规划占用了不少的时间，但好处是有人帮忙，可以各取所长。从中吸取的经验是，尽量少规划早动手，边动手边讨论边解决，但是也不能毫无规划，前期应明确各人任务，避免杂乱无章。
 # 附录
 ## PSP表格
-|**PSP2.1**|**Personal Software Process Stages**| **预估耗时（分钟）** |**实际耗时（分钟）**|
-| :------------: | :------------: |:------------:| :------------: |
-|Planning|计划|      60      |30|
-|Estimate|估计这个任务需要多少时间|      30      |10|
-|Development|开发|     400      |200|
-|Analysis|需求分析 (包括学习新技术)|      60      |30|
-|Design Spec|生成设计文档|     120      |45|
-|Design Review|设计复审|      60      |15|
-|Coding Standard|代码规范 (为目前的开发制定合适的规范)|      30      |10|
-|Design| 具体设计|      60      |20|
-|Coding|具体编码|     300      |120|
-|Code Review|代码复审|      30      |5|
-|Test|测试（自我测试，修改代码，提交修改）|      60      |20|
-|Reporting|报告|      60      |20|
-| Test Repor|测试报告|      30      |10|
-| Size Measurement|计算工作量|      20      |5|
-|Postmortem & Process Improvement Plan|事后总结, 并提出过程改进计划|      60      |5  |
-|Total|合计|     1380     |525|
+|**PSP2.1**|**Personal Software Process Stages**| **预估耗时（分钟）** | **实际耗时（分钟）** |
+| :------------: | :------------: |:------------:|:------------:|
+|Planning|计划|      60      |      60      |
+|Estimate|估计这个任务需要多少时间|      30      |      20      |
+|Development|开发|     400      |     400      |
+|Analysis|需求分析 (包括学习新技术)|      60      |      60      |
+|Design Spec|生成设计文档|     120      |      60      |
+|Design Review|设计复审|      60      |      30      |
+|Coding Standard|代码规范 (为目前的开发制定合适的规范)|      30      |      30      |
+|Design| 具体设计|      60      |      60      |
+|Coding|具体编码|     300      |     300      |
+|Code Review|代码复审|      30      |      20      |
+|Test|测试（自我测试，修改代码，提交修改）|      60      |      60      |
+|Reporting|报告|      60      |      60      |
+| Test Repor|测试报告|      30      |      20      |
+| Size Measurement|计算工作量|      20      |      10      |
+|Postmortem & Process Improvement Plan|事后总结, 并提出过程改进计划|      60      |      20      |
+|Total|合计|     1380     |     1210     |
 
 ## 参考
-- [Jieba : Python 中文分词组件](https://github.com/fxsjy/jieba)
-- [Gensim 中文文档](https://gensim.apachecn.org/)
 - [re --- 正则表达式操作](https://docs.python.org/zh-cn/3/library/re.html)
 - [unittest --- 单元测试框架](https://docs.python.org/zh-cn/3/library/unittest.html)
