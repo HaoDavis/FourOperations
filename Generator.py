@@ -41,26 +41,18 @@ class Generator:
                     exp.append(self.generate_operand()['operStr'])
                     if j > 1 and exp[j - 1] == '÷' and exp[j] == '0':
                         while True:
-                            exp[j - 1] = self.generate_operation()
-                            if exp[j - 1] != '÷':
+                            exp[j ] = self.generate_operand()
+                            if exp[j ] != '0':
                                 continue
                             else:
                                 break
                 else:
                     exp.append(self.generate_operation())
-
                 if j > 3:
-                    if exp[j - 2] == '÷':
-                        if exp[j - 1] > exp[j - 3]:
-                            t = exp[j - 1]
-                            exp[j - 1] = exp[j - 3]
-                            exp[j - 3]=t
-                    elif exp[j - 2] == '-':
-                        if exp[j - 1] < exp[j - 3]:
-                            t = exp[j - 1]
-                            exp[j - 1] = exp[j - 3]
-                            exp[j - 3] = t
-
+                    if exp[j - 2] == '÷' and exp[j - 1] > exp[j - 3]:
+                        exp[j - 1], exp[j - 3] = exp[j - 3], exp[j - 1]
+                    elif exp[j - 2] == '-' and exp[j - 1] < exp[j - 3]:
+                        exp[j - 1], exp[j - 3] = exp[j - 3], exp[j - 1]
             if is_need_parenteses and number_of_oprand != 2:
                 expression = " ".join(self.generate_parentheses(exp, number_of_oprand))
             else:
@@ -73,20 +65,14 @@ class Generator:
                     if result == "False":
                         pass
                     else:
-
                         expressionList.append(expression)
-                        # ('第 %d 道题' % int(i + 1))
-                        # print(expression)
                         i = i + 1
             else:
                 result = self.calculate(expression)
                 if result == "False":
                     pass
                 else:
-
                     expressionList.append(expression)
-                    # ('第 %d 道题' % int(i + 1))
-                    # print(expression)
                     i = i + 1
 
         return expressionList

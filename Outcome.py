@@ -67,10 +67,8 @@ class Outcome:
             with open('Grade.txt', 'w+', encoding='utf-8') as grade_file:
                 grade_file.write(f'Correct: {len(correct_list)} {correct_list}\n')
                 grade_file.write(f'Wrong: {len(wrong_list)} {wrong_list}')
-
         except IOError:
             print('请检查文件路径是否正确')
-
 
 if __name__ == '__main__':
     # exp_file = r'Exercises.txt'
