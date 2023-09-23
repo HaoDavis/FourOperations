@@ -231,15 +231,90 @@ e.g:第一个出栈的运算数为a，第二个出栈的运算数为b，此时�
         return stack_value[0]
 ```
 # 测试运行
+利用unittest单元测试框架,实现单元测试自动化，以下仅列举部分用例。
+```python
+    def test_mid2suffix(self):
+        # 测试中缀表达式转后缀表达式
+        exp = "1 + 2 + 3"
+        exp_process = ExpressionProcess(exp)
+        self.assertEqual(exp_process.re, ['1', '2', '+', '3', '+'])
+```
+2. 
+```python
+    def test_mid2suffix2(self):
+        # 测试中缀表达式转后缀表达式
+        exp = "1 + 2 +"
+        with self.assertRaises(IndexError):
+            exp_process = ExpressionProcess(exp)
+```
+3.
+```python
+    def test_calculate_suffix(self):
+        # 测试后缀表达式求值
+        exp = "1 2 + 3 +"
+        exp_process = ExpressionProcess(exp)
+        self.assertEqual(exp_process.value, 6)
+```
+4.
+```python
+    def test_calculate_suffix2(self):
+        # 测试后缀表达式求值
+        exp = "1 + 2 "
+        with self.assertRaises(ValueError):
+            exp_process = ExpressionProcess(exp)
+```
+5. 
+```python
+    def test_generate_question(self):
+        # 测试生成题目
+        gen = Generator(10, 10)
+        question = gen.generate_question()
+        self.assertEqual(len(question), 10)
+```
+6.
+```python
+    def test_generate_parentheses(self):
+        # 测试生成括号
+        gen = Generator(10, 10)
+        question = gen.generate_parentheses("1 + 2 + 3", 2)
+        self.assertEqual("(" in question, True)
+```
+7.
+```python
+    def test_mid2suffix3(self):
+        # 测试中缀表达式转后缀表达式
+        exp = "1 + 5 × ( 3 + 2 ) - 4 × 5"
+        exp_process = ExpressionProcess(exp)
+        self.assertEqual(exp_process.re, ['1', '5', '3', '2', '+', '×', '+', '4', '5', '×', '-'])
+```
+8.
+```python
+    def test_to_fraction(self):
+        # 测试小数转分数
+        self.assertEqual(Generator.to_fraction(self, 1, 2), [1, 2])
+```
+9.
+```python
+    def test_get_common_factors(self):
+        # 测试获取公因子
+        self.assertEqual(Generator.get_common_factors(self, 6), [2, 3, 6])
+```
+10.
+```python
+    def test_num2symbol(self):
+        # 测试数字转符号
+        self.assertEqual(Generator.num2symbol(self, 1), "+")
+
+```
+11.
+```python
+    def test_is_same(self):
+        # 测试判断重复
+        self.assertEqual(Generator.is_same(self, [], "1 + 2"), False)
+```
 # 项目小结
-朱俊荣：is_same函数一开始用暴力法遍历表达式列表，来寻找是否有与新生成出表达式相同的表达式，
-但效率很低，因为is_same底层调用了便利二叉树的函数。
-后来将表达式列表里的每一个表达式都转换为一个hash，然后对于已经产生hash的表达式，
-在后续的判断中就不需要重新遍历他们，这样就将程序运行时间减半。
-另外答案检查函数中的zip手法也提高了效率。另外，这个项目非常综合，考察到了很多方面的内容，
-有一些规则的判定并没有现成的算法可以参考，需要自己试错。我的伙伴有很好的python语法功底，
-也很熟练地使用git和一些测试工具，让我们的开发效率大大提高。深刻感受到，
-很多bug若是两个人在一起观察讨论就很容易解决，达到一加一远大于二的效果。
+- **朱俊荣**：is_same 函数一开始用暴力法遍历表达式列表，来寻找是否有与新生成出表达式相同的表达式，但效率很低，因为 is_same 底层调用了便利二叉树的函数。后来将表达式列表里的每一个表达式都转换为一个 hash ，然后对于已经产生 hash 的表达式，在后续的判断中就不需要重新遍历他们，这样就将程序运行时间减半。另外答案检查函数中的 zip 手法也提高了效率。另外，这个项目非常综合，考察到了很多方面的内容，有一些规则的判定并没有现成的算法可以参考，需要自己试错。我的伙伴有很好的 Python 语法功底，也很熟练地使用 git 和一些测试工具，让我们的开发效率大大提高。深刻感受到，很多 bug 若是两个人在一起观察讨论就很容易解决，达到一加一远大于二的效果。
+- **戴子豪**：结对项目和个人项目很不一样，与人合作增加了不少的沟通协调成本，前期沟通、项目的规划占用了不少的时间，但好处是有人帮忙，可以各取所长。从中吸取的经验是，尽量少规划早动手，边动手边讨论边解决，但是也不能毫无规划，前期应明确各人任务，避免杂乱无章。
 # 附录
 ## PSP表格
 |**PSP2.1**|**Personal Software Process Stages**| **预估耗时（分钟）** |**实际耗时（分钟）**|
