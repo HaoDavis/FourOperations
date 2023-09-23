@@ -114,6 +114,9 @@ class Generator:
         if expression[0] == '(' and expression[-1] == ')':
             expression = self.generate_parentheses(exp, number_of_oprand)
             return expression
+        if expression.index(')') - expression.index('(') == 2:
+            expression = self.generate_parentheses(exp, number_of_oprand)
+            return expression
         return expression
 
     def generate_operand(self):
