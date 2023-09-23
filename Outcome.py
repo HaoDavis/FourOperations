@@ -24,7 +24,18 @@ class Outcome:
             for i, exp in enumerate(expressions):
                 suffix_expression = ExpressionProcess(exp)
                 exp_value = suffix_expression.calculate_suffix()
-                result = f"Outcome{i + 1}: {exp_value}\n"
+                flag = float(exp_value)
+                exp_value = str(exp_value)
+                if '/' in exp_value and flag > 1:
+                    a,b = exp_value.split('/')
+                    a = int(a)
+                    b = int(b)
+                    # 转化成真分数
+                    c = a//b
+                    d = a%b
+                    e = str(c)+'’'+str(d)+'/'+str(b)
+                    exp_value = e
+                result = f"Answer{i + 1}: {exp_value}\n"
                 file.write(result)
 
     @staticmethod
